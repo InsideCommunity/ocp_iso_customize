@@ -1,0 +1,8 @@
+---
+
+- name: Change permission
+  ansible.builtin.file:
+    path: "{{ ocp_iso_customize_dest }}/{{ _output_iso_name }}"
+    owner: "{{ ocp_iso_customize_dest_owner | default(omit) }}"
+    group: "{{ ocp_iso_customize_dest_group | default(omit) }}"
+    mode: 0755

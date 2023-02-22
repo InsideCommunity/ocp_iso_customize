@@ -1,0 +1,71 @@
+---
+#- name: RHCoreOS Image minify
+#  shell: "coreos-installer iso extract minimal-iso {{ ocp_iso_customize_dest }}{{ ocp_iso_customize_source_iso_url | urlsplit('path') | basename }} {{ ocp_iso_customize_dest }}/custom-{{ ocp_iso_customize_source_iso_url | urlsplit('path') | basename }}"
+
+
+
+#- debug:
+#   var: kargs
+#
+#- debug:
+#   var: live_kargs
+
+# coreos-installer iso extract minimal-iso --output-rootfs /var/www/html/dev/images/rhcos/custom-worker-rootfs.iso /var/www/html/dev/images/rhcos/fedora-coreos-37.20230122.3.0-live.x86_64.iso --rootfs-url {{ ocp_iso_customize_dest }}/{{ ocp_iso_customize_source_iso_url | urlsplit('path') | basename }} /var/www/html/dev/images/rhcos/minimal-fedora-coreos-37.20230122.3.0-live.x86_64.iso
+
+#(ansible) mstrohl@DESKTOP-B9R4QIK:~/ocp_iso_customize$ coreos-installer iso customize  -o /var/www/html/dev/images/rhcos/minimal-custom-worker-localhost-37.20230122.3.0.iso --dest-karg-append "ip=eno1:off ip=eno2:off bond=bond0:ens18,ens19:mode=active-backup,fail_over_mac=follow ip=10.0.10.10::10.0.10.254:255.255.255.0:localhost:bond0:none nameserver=10.0.10.250 nameserver=8.8.8.8" --live-karg-append "bond=bond0:ens18,ens19:mode=active-backup,fail_over_mac=follow ip=10.0.10.10::10.0.10.254:255.255.255.0:localhost:bond0:none nameserver=10.0.10.250 nameserver=8.8.8.8 coreos.inst.ignition_url=http://file.example.com/ocp4/dev/localhost.ign coreos.inst.insecure=true  coreos.inst.image_url=http://file.example.com/ocp4/metal" --dest-device /dev/sda /var/www/html/dev/images/rhcos/minimal-fedora-coreos-37.20230122.3.0-live.x86_64.iso 
+#bash: /usr/local/bin/coreos-installer: Permission denied
+#(ansible) mstrohl@DESKTOP-B9R4QIK:~/ocp_iso_customize$ sudo coreos-installer iso customize  -o /var/www/html/dev/images/rhcos/minimal-custom-worker-localhost-37.20230122.3.0.iso --dest-karg-append "ip=eno1:off ip=eno2:off bond=bond0:ens18,ens19:mode=active-backup,fail_over_mac=follow ip=10.0.10.10::10.0.10.254:255.255.255.0:localhost:bond0:none nameserver=10.0.10.250 nameserver=8.8.8.8" --live-karg-append "bond=bond0:ens18,ens19:mode=active-backup,fail_over_mac=follow ip=10.0.10.10::10.0.10.254:255.255.255.0:localhost:bond0:none nameserver=10.0.10.250 nameserver=8.8.8.8 coreos.inst.ignition_url=http://file.example.com/ocp4/dev/localhost.ign coreos.inst.insecure=true  coreos.inst.image_url=http://file.example.com/ocp4/metal" --dest-device /dev/sda /var/www/html/dev/images/rhcos/minimal-fedora-coreos-37.20230122.3.0-live.x86_64.iso 
+#Boot media will automatically install to /dev/sda without confirmation.
+#(ansible) mstrohl@DESKTOP-B9R4QIK:~/ocp_iso_customize$ ll /var/www/html/dev/images/rhcos/
+
+
+- name: Check base image exists
+  ansible.builtin.stat:
+     path: "{{ ocp_iso_customize_dest }}/{{ ocp_iso_customize_source_iso_url | urlsplit('path') | basename }}"
+  register: baseimage
+  when: _kargs is defined
+
+- name: Fail if baseimage is not found
+  ansible.builtin.fail:
+     msg: "Base image {{ ocp_iso_customize_dest }}/{{ ocp_iso_customize_source_iso_url | urlsplit('path') | basename }} not found"
+  when: not baseimage.stat.exists
+
+# Manage minimal Iso
+
+- name: Prompt CoreOS minimal Iso and rootfs extraction command
+  ansible.builtin.debug:
+     msg: |
+      coreos-installer iso extract minimal-iso --output-rootfs {{ ocp_iso_customize_dest }}/{{ _output_rootfs_name }} \
+      {{ ocp_iso_customize_dest }}/{{ ocp_iso_customize_source_iso_url | urlsplit('path') | basename }} \
+      {{ ocp_iso_customize_dest }}/{{ _input_iso_name }}
+  when: "_kargs is defined and ocp_iso_customize_output_type == 'minimal'"
+
+- name: CoreOS minimal Iso and rootfs extraction command
+  ansible.builtin.shell: |
+   coreos-installer iso extract minimal-iso --output-rootfs {{ ocp_iso_customize_dest }}/{{ _output_rootfs_name }} \
+   {{ ocp_iso_customize_dest }}/{{ ocp_iso_customize_source_iso_url | urlsplit('path') | basename }} \
+   {{ ocp_iso_customize_dest }}/{{ _input_iso_name }}
+  when: "_kargs is defined and ocp_iso_customize_output_type == 'minimal'"
+
+# Customize iso
+
+- name: Prompt CoreOS Iso customize command
+  ansible.builtin.debug:
+     msg: |
+      coreos-installer iso customize \
+      -o {{ ocp_iso_customize_dest }}/{{ _output_iso_name }} \
+      --dest-karg-append "{{ _kargs }}" \
+      --live-karg-append "{{ _live_kargs }}" \
+      --dest-device /dev/{{ ocp_iso_customize_dest_device | default('sda') }} \
+      {{ ocp_iso_customize_dest }}/{{ _input_iso_name }}
+  when: _kargs is defined
+
+- name: CoreOS Iso customize
+  ansible.builtin.shell: |
+   coreos-installer iso customize  \
+   -o {{ ocp_iso_customize_dest }}/{{ _output_iso_name }} \
+   --dest-karg-append "{{ _kargs }}" \
+   --live-karg-append "{{ _live_kargs }}" \
+   --dest-device /dev/{{ ocp_iso_customize_dest_device | default('sda') }} \
+   {{ ocp_iso_customize_dest }}/{{ _input_iso_name }}
+  when: _kargs is defined

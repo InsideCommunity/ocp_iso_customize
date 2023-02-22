@@ -1,0 +1,25 @@
+---
+- name: Download coreos-installer
+  ansible.builtin.get_url:
+    url: "{{ ocp_iso_customize_coreos_installer_url }}"
+    dest: /usr/local/bin/coreos-installer
+    mode: 0700
+  when: "ocp_iso_customize_coreos_installer_type != 'podman'"
+
+- name: Ensure folders exists
+  ansible.builtin.file:
+    state: directory
+    path: "{{ ocp_iso_customize_dest }}"
+    recurse: true
+
+- name: Check live iso image
+  ansible.builtin.stat:
+    path: "{{ ocp_iso_customize_dest }}/{{ ocp_iso_customize_source_iso_url | urlsplit('path') | basename }}"
+  register: isocheck
+
+- name: Download coreos live iso
+  ansible.builtin.get_url:
+    url: "{{ ocp_iso_customize_source_iso_url }}"
+    dest: "{{ ocp_iso_customize_dest }}/{{ ocp_iso_customize_source_iso_url | urlsplit('path') | basename }}"
+    mode: 0700
+  when: not isocheck.stat.exists

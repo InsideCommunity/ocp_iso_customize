@@ -1,0 +1,20 @@
+---
+
+- name: Ensure prerequisites
+  run_once: true
+  ansible.builtin.include_tasks: prerequisites.yml
+
+- name: Set vars/facts
+  ansible.builtin.include_tasks: setting_facts.yml
+
+- name: Generate iso using podman
+  ansible.builtin.include_tasks: modify_podman.yml
+  when: "ocp_iso_customize_coreos_installer_type == 'podman'"
+
+- name: Generate iso using cli
+  ansible.builtin.include_tasks: modify.yml
+  when: "ocp_iso_customize_coreos_installer_type != 'podman'"
+
+- name: Move files
+  run_once: true
+  ansible.builtin.include_tasks: finalize.yml

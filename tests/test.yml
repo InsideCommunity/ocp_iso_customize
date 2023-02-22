@@ -1,0 +1,11 @@
+---
+
+- name: Testing role
+  hosts: localhost
+  connection: local
+  become: true
+  roles:
+    - ../../ocp_iso_customize
+  vars:
+    ocp_iso_customize_output_type: minimal
+    ocp_iso_customize_coreos_installer_type: podman
