@@ -1,0 +1,25 @@
+---
+- name: Set source iso
+  ansible.builtin.set_fact:
+     _src_iso_name: "{{ ocp_iso_customize_source_iso_url | urlsplit('path') | basename }}"
+
+- name: Get iso version for RedHatCoreOS
+  ansible.builtin.set_fact:
+     _iso_output_version: "{{ _src_iso_name.split('-')[1] }}"
+  when: "'rhcos' in _src_iso_name"
+
+- name: Get iso version for FedoraCoreOS
+  ansible.builtin.set_fact:
+     _iso_output_version: "{{ _src_iso_name.split('-')[2] }}"
+  when: "'fedora' in _src_iso_name"
+
+- name: Set isos facts
+  ansible.builtin.set_fact:
+     _input_iso_name: "{{ ocp_iso_customize_source_iso_url | urlsplit('path') | basename }}"
+     _output_iso_name: "custom-{{ ocp_iso_customize_role }}-{{ inventory_hostname.split('.')[0] }}-{{ _iso_output_version }}.iso"
+
+- name: Generate kargs and live_kargs
+  ansible.builtin.set_fact:
+     _kargs: "{{ lookup('template', 'kargs.j2') }}"
+     _live_kargs: "{{ lookup('template', 'live_kargs.j2') }}"
+  when: ('masters' in group_names) or ('workers' in group_names) or ('bootstrap' in group_names)

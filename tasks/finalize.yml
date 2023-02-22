@@ -1,0 +1,14 @@
+---
+- name: Find files
+  find:
+    paths: "{{ ocp_iso_customize_dest }}"
+    patterns: "*.iso"
+  register: files_to_change
+
+- name: Change permission
+  ansible.builtin.file:
+    path: "{{ item.path }}"
+    owner: "{{ ocp_iso_customize_dest_owner | default(omit) }}"
+    group: "{{ ocp_iso_customize_dest_group | default(omit) }}"
+    mode: 0755
+  with_items: "{{ files_to_change.files }}"

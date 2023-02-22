@@ -1,0 +1,7 @@
+{% if ocp_iso_customize_kargs.bond is defined -%}  
+{% for dis_inter in ocp_iso_customize_kargs.disabled_interfaces | default([]) -%}ip={{ dis_inter }}:off {% endfor %}bond={{ ocp_iso_customize_kargs.bond.name }}:{{ ocp_iso_customize_kargs.bond.ifaces }}:{{ocp_iso_customize_kargs.bond.bond_opts}} ip={{ ocp_iso_customize_kargs.client_ip }}::{{ ocp_iso_customize_kargs.gw_ip }}:{{ ocp_iso_customize_kargs.netmask }}:{{ ansible_host }}:{{ ocp_iso_customize_kargs.interface }}:{{ ocp_iso_customize_kargs.autoconf }} nameserver={{ ocp_iso_customize_primary_dns }} nameserver={{ ocp_iso_customize_secondary_dns }} {% if item.extra_karg | default(false) %} {{ item.extra_karg }} {% endif %}
+{% elif ocp_iso_customize_kargs.client_ip is defined -%}
+{% for dis_inter in ocp_iso_customize_kargs.disabled_interfaces | default([]) -%}ip={{ dis_inter }}:off {% endfor %}ip={{ ocp_iso_customize_kargs.client_ip }}::{{ ocp_iso_customize_kargs.gw_ip }}:{{ ocp_iso_customize_kargs.netmask }}:{{ ansible_host }}:{{ ocp_iso_customize_kargs.interface }}:{{ ocp_iso_customize_kargs.autoconf }} nameserver={{ ocp_iso_customize_primary_dns }} nameserver={{ ocp_iso_customize_secondary_dns }} {% if item.extra_karg | default(false) %} {{ item.extra_karg }} {% endif %}
+{% else -%}
+{{ ocp_iso_customize_kargs | default(false) }}
+{% endif %}

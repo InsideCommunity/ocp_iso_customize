@@ -1,0 +1,33 @@
+---
+- name: Check base image exists
+  ansible.builtin.stat:
+     path: "{{ ocp_iso_customize_dest }}/{{ ocp_iso_customize_source_iso_url | urlsplit('path') | basename }}"
+  register: baseimage
+  when: _kargs is defined
+
+- name: Fail if baseimage is not found
+  ansible.builtin.fail:
+     msg: "Base image {{ ocp_iso_customize_dest }}/{{ ocp_iso_customize_source_iso_url | urlsplit('path') | basename }} not found"
+  when: not baseimage.stat.exists
+
+# Customize iso
+- name: Prompt CoreOS Iso customize command
+  ansible.builtin.debug:
+     msg: |
+      coreos-installer iso customize \
+      -o {{ ocp_iso_customize_dest }}/{{ _output_iso_name }} \
+      --dest-karg-append "{{ _kargs }}" \
+      --live-karg-append "{{ _live_kargs }}" \
+      --dest-device /dev/{{ ocp_iso_customize_dest_device | default('sda') }} \
+      {{ ocp_iso_customize_dest }}/{{ _input_iso_name }}
+  when: _kargs is defined
+
+- name: CoreOS Iso customize
+  ansible.builtin.shell: |
+   coreos-installer iso customize  \
+   -o {{ ocp_iso_customize_dest }}/{{ _output_iso_name }} \
+   --dest-karg-append "{{ _kargs }}" \
+   --live-karg-append "{{ _live_kargs }}" \
+   --dest-device /dev/{{ ocp_iso_customize_dest_device | default('sda') }} \
+   {{ ocp_iso_customize_dest }}/{{ _input_iso_name }}
+  when: _kargs is defined
