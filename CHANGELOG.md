@@ -2,8 +2,11 @@
 
 ## [Unreleased]
 
-### Added 
+N/A
 
+## [1.1.0] - 2023-03-06
+
+### Added 
 - Capacity to generate minimal iso.
 
 ## [1.0.0] - 2023-03-05

@@ -10,6 +10,43 @@
      msg: "Base image {{ ocp_iso_customize_dest }}/{{ ocp_iso_customize_source_iso_url | urlsplit('path') | basename }} not found"
   when: not baseimage.stat.exists
 
+- name: Check minimal exists
+  run_once: true
+  ansible.builtin.stat:
+     path: "{{ ocp_iso_customize_dest }}/{{ _input_iso_name }}"
+  register: minimage
+  when: _kargs is defined and ocp_iso_customize_output_type == 'minimal'
+
+- name: Check rootfs exists
+  run_once: true
+  ansible.builtin.stat:
+     path: "{{ ocp_iso_customize_dest }}/{{ _output_rootfs_name }}"
+  register: rootfsimage
+  when: _kargs is defined and ocp_iso_customize_output_type == 'minimal'
+
+# Manage minimal iso
+- name: Extract CoreOS minimal Iso and rootfs
+  run_once: true
+  containers.podman.podman_container:
+     name: minimal_iso_builder_{{ ansible_host }}
+     image: "{{ ocp_iso_customize_podman_coreos_installer_image | default('quay.io/coreos/coreos-installer') }}"
+     command:
+        - iso
+        - extract
+        - minimal-iso
+        - --output-rootfs=/data/{{ _output_rootfs_name }}
+        - /data/{{ ocp_iso_customize_source_iso_url | urlsplit('path') | basename }}
+        - /data/{{ _input_iso_name }}
+     detach: false
+     privileged: true
+     rm: true
+     volume:
+        - "{{ ocp_iso_customize_dest }}:/data"
+     workdir: /data
+  when: "_kargs is defined and ocp_iso_customize_output_type == 'minimal' and (not minimage.stat.exists and not rootfsimage.stat.exists)"
+  register: minify
+  failed_when: "'File exists' not in minify.stderr and minify.stderr != ''"
+
 - name: Prompt command
   ansible.builtin.debug:
     msg: podman run --pull=always --privileged --rm -v {{ ocp_iso_customize_dest }}:/data -w /data quay.io/coreos/coreos-installer iso customize -o /data/{{ _output_iso_name }} --dest-karg-append "{{ _kargs }}" --live-karg-append "{{ _live_kargs }}" --dest-device /dev/{{ ocp_iso_customize_dest_device | default('sda') }} /data/{{ _input_iso_name }}

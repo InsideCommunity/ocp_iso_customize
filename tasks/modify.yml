@@ -10,6 +10,37 @@
      msg: "Base image {{ ocp_iso_customize_dest }}/{{ ocp_iso_customize_source_iso_url | urlsplit('path') | basename }} not found"
   when: not baseimage.stat.exists
 
+- name: Check minimal exists
+  run_once: true
+  ansible.builtin.stat:
+     path: "{{ ocp_iso_customize_dest }}/{{ _input_iso_name }}"
+  register: minimage
+  when: _kargs is defined and ocp_iso_customize_output_type == 'minimal'
+
+- name: Check rootfs exists
+  run_once: true
+  ansible.builtin.stat:
+     path: "{{ ocp_iso_customize_dest }}/{{ _output_rootfs_name }}"
+  register: rootfsimage
+  when: _kargs is defined and ocp_iso_customize_output_type == 'minimal'
+
+# Manage minimal Iso
+
+- name: Prompt CoreOS minimal Iso and rootfs extraction command
+  ansible.builtin.debug:
+     msg: |
+      coreos-installer iso extract minimal-iso --output-rootfs {{ ocp_iso_customize_dest }}/{{ _output_rootfs_name }} \
+      {{ ocp_iso_customize_dest }}/{{ ocp_iso_customize_source_iso_url | urlsplit('path') | basename }} \
+      {{ ocp_iso_customize_dest }}/{{ _input_iso_name }}
+  when: "_kargs is defined and ocp_iso_customize_output_type == 'minimal'"
+
+- name: CoreOS minimal Iso and rootfs extraction command
+  ansible.builtin.shell: |
+   coreos-installer iso extract minimal-iso --output-rootfs {{ ocp_iso_customize_dest }}/{{ _output_rootfs_name }} \
+   {{ ocp_iso_customize_dest }}/{{ ocp_iso_customize_source_iso_url | urlsplit('path') | basename }} \
+   {{ ocp_iso_customize_dest }}/{{ _input_iso_name }}
+  when: "_kargs is defined and ocp_iso_customize_output_type == 'minimal'"
+
 # Customize iso
 - name: Prompt CoreOS Iso customize command
   ansible.builtin.debug:

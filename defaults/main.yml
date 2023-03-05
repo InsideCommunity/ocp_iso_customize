@@ -1,9 +1,12 @@
 ocp_iso_customize_source_iso_url: "https://builds.coreos.fedoraproject.org/prod/streams/stable/builds/37.20230122.3.0/x86_64/fedora-coreos-37.20230122.3.0-live.x86_64.iso"
-# custom coreos install image when store in a private network
+# Custom coreos install image when store in a private network
 ocp_iso_customize_coreos_img_url:
-# installer type cli or podman
-# podman is prefered because of the use of podman_container module instead of shell for cli
+# Installer type cli or podman
+# Podman is prefered because of the use of podman_container module instead of shell for cli
 ocp_iso_customize_coreos_installer_type: podman
+
+# Define output type minimal (to use with shared rootfs to avoid storage needs) or full iso by default
+#ocp_iso_customize_output_type: minimal
 
 ocp_iso_customize_coreos_installer_url: "http://mirror.openshift.com/pub/openshift-v4/x86_64/clients/coreos-installer/latest/coreos-installer"
 
@@ -15,12 +18,12 @@ ocp_iso_customize_secondary_dns: 8.8.8.8
 
 ocp_iso_customize_filer: "http://file.example.com/ocp4"
 
-# the following var let you have ignitions in a different location
+# The following var let you have ignitions in a different location
 ocp_iso_customize_filer_ignition_path: "{{ ocp_iso_customize_filer }}/example/"
 
 ocp_iso_customize_dest: "/var/www/html/example/images/coreOS"
 
-# define role in group or host vars bootstrap,master,worker
+# Define role in group or host vars bootstrap,master,worker
 ocp_iso_customize_role: worker
 
 # Should be defined in host_vars both group_vars and host_vars
