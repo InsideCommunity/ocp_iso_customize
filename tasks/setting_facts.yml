@@ -18,6 +18,13 @@
      _input_iso_name: "{{ ocp_iso_customize_source_iso_url | urlsplit('path') | basename }}"
      _output_iso_name: "custom-{{ ocp_iso_customize_role }}-{{ inventory_hostname.split('.')[0] }}-{{ _iso_output_version }}.iso"
 
+- name: Set minimal iso facts
+  ansible.builtin.set_fact:
+     _input_iso_name: "minimal-{{ ocp_iso_customize_source_iso_url | urlsplit('path') | basename }}"
+     _output_iso_name: "minimal-{{ ocp_iso_customize_role }}-{{ inventory_hostname.split('.')[0] }}-{{ _iso_output_version }}.iso"
+     _output_rootfs_name: "rootfs-{{ ocp_iso_customize_source_iso_url | urlsplit('path') | basename | regex_replace('(.iso)$','.img') }}"
+  when: "ocp_iso_customize_output_type == 'minimal'"
+
 - name: Generate kargs and live_kargs
   ansible.builtin.set_fact:
      _kargs: "{{ lookup('template', 'kargs.j2') }}"
