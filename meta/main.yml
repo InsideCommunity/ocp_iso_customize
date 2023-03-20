@@ -1,6 +1,6 @@
 galaxy_info:
   author: STROHL Matthieu
-  description: Lead Cloud
+  description: Role to manage automatic rhcoreos or coreos creation with kargs and livekargs for Openshift/OKD installations
   company: Inside Group
 
   # If the issue tracker for your role is not on github, uncomment the
