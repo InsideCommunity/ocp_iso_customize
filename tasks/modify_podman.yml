@@ -45,7 +45,7 @@
      workdir: /data
   when: "_kargs is defined and ocp_iso_customize_output_type == 'minimal' and (not minimage.stat.exists and not rootfsimage.stat.exists)"
   register: minify
-  failed_when: "'File exists' not in minify.stderr and minify.stderr != ''"
+  failed_when: "'File exists' not in minify.stderr and 'WARNING: The same type, major and minor' not in minify.stderr and minify.stderr != ''"
 
 - name: Prompt command
   ansible.builtin.debug:
