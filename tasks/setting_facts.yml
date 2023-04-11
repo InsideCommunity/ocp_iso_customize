@@ -29,4 +29,4 @@
   ansible.builtin.set_fact:
      _kargs: "{{ lookup('template', 'kargs.j2') }}"
      _live_kargs: "{{ lookup('template', 'live_kargs.j2') }}"
-  when: ('masters' in group_names) or ('workers' in group_names) or ('bootstrap' in group_names)
+  when: ('controlers' in group_names) or ('workers' in group_names) or ('bootstrap' in group_names)

@@ -23,7 +23,7 @@ ocp_iso_customize_filer_ignition_path: "{{ ocp_iso_customize_filer }}/example/"
 
 ocp_iso_customize_dest: "/var/www/html/example/images/coreOS"
 
-# Define role in group or host vars bootstrap,master,worker
+# Define role in group or host vars bootstrap,controler,worker
 ocp_iso_customize_role: worker
 
 # Should be defined in host_vars both group_vars and host_vars
