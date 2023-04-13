@@ -15,14 +15,14 @@
   ansible.builtin.stat:
      path: "{{ ocp_iso_customize_dest }}/{{ _input_iso_name }}"
   register: minimage
-  when: _kargs is defined and ocp_iso_customize_output_type == 'minimal'
+  when: _kargs is defined and (ocp_iso_customize_output_type | d(false)) == 'minimal'
 
 - name: Check rootfs exists
   run_once: true
   ansible.builtin.stat:
      path: "{{ ocp_iso_customize_dest }}/{{ _output_rootfs_name }}"
   register: rootfsimage
-  when: _kargs is defined and ocp_iso_customize_output_type == 'minimal'
+  when: _kargs is defined and (ocp_iso_customize_output_type | d(false)) == 'minimal'
 
 # Manage minimal Iso
 
@@ -34,8 +34,6 @@
       {{ ocp_iso_customize_dest }}/{{ ocp_iso_customize_source_iso_url | urlsplit('path') | basename }} \
       {{ ocp_iso_customize_dest }}/{{ _input_iso_name }}
   when: "_kargs is defined and ocp_iso_customize_output_type == 'minimal' and (not minimage.stat.exists and not rootfsimage.stat.exists)"
-  register: minify
-  failed_when: "'File exists' not in minify.stderr and minify.stderr != ''"
 
 - name: CoreOS minimal Iso and rootfs extraction command
   run_once: true
@@ -43,9 +41,10 @@
    coreos-installer iso extract minimal-iso --output-rootfs {{ ocp_iso_customize_dest }}/{{ _output_rootfs_name }} \
    {{ ocp_iso_customize_dest }}/{{ ocp_iso_customize_source_iso_url | urlsplit('path') | basename }} \
    {{ ocp_iso_customize_dest }}/{{ _input_iso_name }}
-  when: "_kargs is defined and ocp_iso_customize_output_type == 'minimal' and (not minimage.stat.exists and not rootfsimage.stat.exists)"
+  when: "_kargs is defined and ocp_iso_customize_output_type == 'minimal' and (not minimage.stat.exists and not rootfsimage.stat.exists)"       
   register: minify
   failed_when: "'File exists' not in minify.stderr and minify.stderr != ''"
+  changed_when: "minify.rc != 0 and minify.stderr != ''"
 
 # Customize iso
 - name: Prompt CoreOS Iso customize command
@@ -59,7 +58,26 @@
       {{ ocp_iso_customize_dest }}/{{ _input_iso_name }}
   when: _kargs is defined
 
-- name: CoreOS Iso customize
+- name: Check minimal output file exists
+  run_once: true
+  ansible.builtin.stat:
+     path: "{{ ocp_iso_customize_dest }}/{{ _output_iso_name }}"
+  register: outputminiiso
+  when: "_kargs is defined and ocp_iso_customize_output_type == 'minimal'"
+
+- name: Check output file exists
+  run_once: true
+  ansible.builtin.stat:
+     path: "{{ ocp_iso_customize_dest }}/{{ _output_iso_name }}"
+  register: outputiso
+  when: "_kargs is defined and ocp_iso_customize_output_type != 'minimal'"
+
+- name: Debug vars
+  ansible.builtin.debug:
+   msg: "{{ outputminiiso }}"
+   verbosity: 3
+
+- name: CoreOS minify Iso customize
   ansible.builtin.shell: |
    coreos-installer iso customize  \
    -o {{ ocp_iso_customize_dest }}/{{ _output_iso_name }} \
@@ -67,4 +85,23 @@
    --live-karg-append "{{ _live_kargs }}" \
    --dest-device /dev/{{ ocp_iso_customize_dest_device | default('sda') }} \
    {{ ocp_iso_customize_dest }}/{{ _input_iso_name }}
-  when: _kargs is defined
+  when: "_kargs is defined and ocp_iso_customize_output_type == 'minimal' and not ( outputminiiso.stat.exists | d(false) )"
+  register: cli_customize_mini
+  changed_when: "cli_customize_mini.rc != 0 and cli_customize_mini.stderr != ''"
+
+- name: Debug vars
+  ansible.builtin.debug:
+   msg: "{{ outputiso }}"
+   verbosity: 3
+
+- name: CoreOS minify Iso customize
+  ansible.builtin.shell: |
+   coreos-installer iso customize  \
+   -o {{ ocp_iso_customize_dest }}/{{ _output_iso_name }} \
+   --dest-karg-append "{{ _kargs }}" \
+   --live-karg-append "{{ _live_kargs }}" \
+   --dest-device /dev/{{ ocp_iso_customize_dest_device | default('sda') }} \
+   {{ ocp_iso_customize_dest }}/{{ _input_iso_name }}
+  when: "_kargs is defined and ocp_iso_customize_output_type != 'minimal' and not (outputiso.stat.exists | d(false) )"
+  register: cli_customize
+  changed_when: "cli_customize.rc != 0 and cli_customize.stderr != ''"

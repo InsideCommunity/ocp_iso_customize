@@ -1,0 +1,50 @@
+---
+dependency:
+  name: galaxy
+driver:
+  name: podman
+platforms:
+  - name: bootstrap
+    image: quay.io/podman/stable
+    pre_build_image: true
+    tmpfs:
+      - /run
+      - /tmp
+    privileged: true
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:ro
+    groups:
+      - bootstrap
+  - name: controler
+    image: quay.io/podman/stable
+    pre_build_image: true
+    tmpfs:
+      - /run
+      - /tmp
+    privileged: true
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:ro
+    groups:
+      - controlers
+  - name: worker01
+    image: quay.io/podman/stable
+    pre_build_image: true
+    tmpfs:
+      - /run
+      - /tmp
+    privileged: true
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:ro
+    groups:
+      - workers
+provisioner:
+  name: ansible
+  log: false
+  options:
+    vvv: true
+verifier:
+  name: ansible
+lint: |
+  set -e
+  yamllint .
+  ansible-lint .

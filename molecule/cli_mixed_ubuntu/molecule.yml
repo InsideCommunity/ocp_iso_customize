@@ -1,0 +1,44 @@
+---
+dependency:
+  name: galaxy
+driver:
+  name: podman
+platforms:
+  - name: bootstrap
+    image: docker.io/library/ubuntu:focal
+    tmpfs:
+      - /run
+      - /tmp
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:ro
+    groups:
+      - bootstrap
+  - name: controler
+    image: docker.io/library/ubuntu:jammy
+    tmpfs:
+      - /run
+      - /tmp
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:ro
+    groups:
+      - controlers
+  - name: worker01
+    image: docker.io/library/ubuntu:kinetic
+    tmpfs:
+      - /run
+      - /tmp
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:ro
+    groups:
+      - workers
+provisioner:
+  name: ansible
+  log: false
+  options:
+    v: true
+verifier:
+  name: ansible
+lint: |
+  set -e
+  yamllint .
+  ansible-lint .

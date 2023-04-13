@@ -6,7 +6,7 @@ ocp_iso_customize_coreos_img_url:
 ocp_iso_customize_coreos_installer_type: podman
 
 # Define output type minimal (to use with shared rootfs to avoid storage needs) or full iso by default
-#ocp_iso_customize_output_type: minimal
+ocp_iso_customize_output_type: minimal
 
 ocp_iso_customize_coreos_installer_url: "http://mirror.openshift.com/pub/openshift-v4/x86_64/clients/coreos-installer/latest/coreos-installer"
 
