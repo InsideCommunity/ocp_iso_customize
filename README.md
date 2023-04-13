@@ -1,28 +1,129 @@
-# ocp_iso_customize
+# insidegroup.ocp_iso_customize
 
-## Description
+[![Maintainer](https://img.shields.io/badge/maintained%20by-InsideCommunity-e00000?style=flat-square)](https://github.com/InsideCommunity)
+[![License](https://img.shields.io/github/license/InsideCommunity/ocp_iso_customize?style=flat-square)](https://github.com/InsideCommunity/ocp_iso_customize/blob/main/LICENSE)
+[![Release](https://img.shields.io/github/v/release/InsideCommunity/ocp_iso_customize?style=flat-square)](https://github.com/InsideCommunity/ocp_iso_customize/releases)
+[![Status](https://img.shields.io/github/workflow/status/InsideCommunity/ocp_iso_customize/Ansible%20Molecule?style=flat-square&label=tests)](https://github.com/InsideCommunity/ocp_iso_customize/actions?query=workflow%3A%22Ansible+Molecule%22)
+[![Ansible Galaxy](https://img.shields.io/badge/ansible-galaxy-black.svg?style=flat-square&logo=ansible)](https://galaxy.ansible.com/InsideCommunity/ocp_iso_customize)[![Ansible version](https://img.shields.io/badge/ansible-%3E%3D2.9-black.svg?style=flat-square&logo=ansible)](https://github.com/ansible/ansible)
 
-Ansible role to generate Red Hat CoreOS or Fedora CoreOS live iso with network,partitioning and ignition configured to speedup Openshift cluster bootstraping.
+⭐ Star us on GitHub — it motivates us a lot!
 
-# Usage
+Role to manage automatic rhcoreos or coreos creation with kargs and livekargs for Openshift/OKD installations
 
-Overwrite vars defined in defaults to fit your needs.
+**Platforms Supported**:
 
-Create playbook:
+| Platform | Versions |
+|----------|----------|
+| Ubuntu | focal, jammy |
+| Fedora | all |
 
+## ⚠️ Requirements
+
+Ansible >= 2.9.
+
+Due to coreos-installer usage:
+* [openssl1.1-1.1](https://download-ib01.fedoraproject.org/pub/fedora/linux/releases/37/Everything/x86_64/os/Packages/o/openssl1.1-1.1.1q-2.fc37.x86_64.rpm) (for Fedora)
+* [libssl1.1](http://nz2.archive.ubuntu.com/ubuntu/pool/main/o/openssl/libssl1.1_1.1.1f-1ubuntu2.17_amd64.deb) (for Ubuntu)
+
+### Ansible role dependencies
+
+None.
+
+## ⚡ Installation
+
+### Install with Ansible Galaxy
+
+```shell
+ansible-galaxy install insidegroup.ocp_iso_customize
 ```
-cat << EOF >> iso_playbook.yml
----
-- name: Manage Openshift Images
-  hosts: localhost
-  become: true
+
+### Install with git
+
+If you do not want a global installation, clone it into your `roles_path`.
+
+```bash
+git clone https://github.com/InsideCommunity/ocp_iso_customize.git  insidegroup.ocp_iso_customize
+```
+
+But I often add it as a submodule in a given `playbook_dir` repository.
+
+```bash
+git submodule add https://github.com/InsideCommunity/ocp_iso_customize.git roles/insidegroup.ocp_iso_customize
+```
+
+As the role is not managed by Ansible Galaxy, you do not have to specify the
+github user account.
+
+### ✏️ Example Playbook
+
+Basic usage is:
+
+```yaml
+- hosts: all
   roles:
-    - role: ocp_iso_customize
-EOF
+    - role: insidegroup.ocp_iso_customize
+      vars:
+        ocp_iso_customize_coreos_img_url: null
+        ocp_iso_customize_coreos_installer_type: podman
+        ocp_iso_customize_coreos_installer_url: http://mirror.openshift.com/pub/openshift-v4/x86_64/clients/coreos-installer/latest/coreos-installer
+        ocp_iso_customize_dest: /var/www/html/example/images/coreOS
+        ocp_iso_customize_dest_device: sda
+        ocp_iso_customize_domain: example.com
+        ocp_iso_customize_filer: http://file.example.com/ocp4
+        ocp_iso_customize_filer_ignition_path: '{{ ocp_iso_customize_filer }}/example/'
+        ocp_iso_customize_output_type: minimal
+        ocp_iso_customize_primary_dns: 10.0.10.250
+        ocp_iso_customize_role: worker
+        ocp_iso_customize_secondary_dns: 8.8.8.8
+        ocp_iso_customize_source_iso_url: https://builds.coreos.fedoraproject.org/prod/streams/stable/builds/37.20230122.3.0/x86_64/fedora-coreos-37.20230122.3.0-live.x86_64.iso
+        ocp_iso_insecure_ignition: true
+        
 ```
 
-Execute:
+## ⚙️ Role Variables
 
-```
-ansible-playbook -i inventory iso_playbook.yml
-```
+Variables are divided in three types.
+
+The **default vars** section shows you which variables you may
+override in your ansible inventory. As a matter of fact, all variables should
+be defined there for explicitness, ease of documentation as well as overall
+role manageability.
+
+The **context variables** are shown in section below hint you
+on how runtime context may affects role execution.
+
+### Default variables
+Role default variables from `defaults/main.yml`.
+
+| Variable Name | Value |
+|---------------|-------|
+| ocp_iso_customize_source_iso_url | https://builds.coreos.fedoraproject.org/prod/streams/stable/builds/37.20230122.3.0/x86_64/fedora-coreos-37.20230122.3.0-live.x86_64.iso |
+| ocp_iso_customize_coreos_img_url | None |
+| ocp_iso_customize_coreos_installer_type | podman |
+| ocp_iso_customize_output_type | minimal |
+| ocp_iso_customize_coreos_installer_url | http://mirror.openshift.com/pub/openshift-v4/x86_64/clients/coreos-installer/latest/coreos-installer |
+| ocp_iso_insecure_ignition | True |
+| ocp_iso_customize_domain | example.com |
+| ocp_iso_customize_primary_dns | 10.0.10.250 |
+| ocp_iso_customize_secondary_dns | 8.8.8.8 |
+| ocp_iso_customize_filer | http://file.example.com/ocp4 |
+| ocp_iso_customize_filer_ignition_path | {{ ocp_iso_customize_filer }}/example/ |
+| ocp_iso_customize_dest | /var/www/html/example/images/coreOS |
+| ocp_iso_customize_role | worker |
+| ocp_iso_customize_dest_device | sda |
+
+### Context variables
+
+None.
+
+## ©️ [License](LICENSE)
+
+## 📄 [CHANGELOG.md](CHANGELOG.md)
+
+## Author Information
+
+Inside Group
+
+## 👏 Special thanks
+
+README generated with [ansible-gendoc](https://github.com/claranet/ansible-gendoc)
