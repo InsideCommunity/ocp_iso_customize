@@ -1,6 +1,6 @@
 # insidegroup.ocp_iso_customize
 
-[![Maintainer](https://img.shields.io/badge/maintained%20by-InsideCommunity-e00000?style=flat-square)](https://github.com/InsideCommunity)
+[![Maintainer](https://img.shields.io/badge/maintained%20by-InsideCommunity-00548c?style=flat-square)](https://github.com/InsideCommunity)
 [![License](https://img.shields.io/github/license/InsideCommunity/ocp_iso_customize?style=flat-square)](https://github.com/InsideCommunity/ocp_iso_customize/blob/main/LICENSE)
 [![Release](https://img.shields.io/github/v/release/InsideCommunity/ocp_iso_customize?style=flat-square)](https://github.com/InsideCommunity/ocp_iso_customize/releases)
 [![Status](https://img.shields.io/github/workflow/status/InsideCommunity/ocp_iso_customize/Ansible%20Molecule?style=flat-square&label=tests)](https://github.com/InsideCommunity/ocp_iso_customize/actions?query=workflow%3A%22Ansible+Molecule%22)
