@@ -6,8 +6,17 @@ galaxy_info:
   company: Inside Group
   license: GPL-3.0-only
   
-  min_ansible_version: 2.9
+  min_ansible_version: "2.9"
 
-  galaxy_tags: ['insidegroup','openshift','okd','ignition','coreos']
+  platforms:
+  - name: Ubuntu
+    versions:
+      - focal
+      - jammy
+  - name: Fedora
+    versions:
+      - all
+
+  galaxy_tags: ['insidegroup', 'openshift', 'okd', 'ignition', 'coreos']
 
 dependencies: []

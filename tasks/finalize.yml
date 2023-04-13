@@ -1,6 +1,6 @@
 ---
 - name: Find files
-  find:
+  ansible.builtin.find:
     paths: "{{ ocp_iso_customize_dest }}"
     patterns: "*.iso,*.img"
   register: files_to_change

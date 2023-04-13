@@ -1,0 +1,43 @@
+---
+- name: Converge bootstrap
+  gather_facts: false
+  hosts: bootstrap
+  tasks:
+    # replace these tasks with whatever you find suitable to test
+    - name: Copy something to test use of synchronize module
+      ansible.builtin.copy:
+        src: /etc/hosts
+        dest: /tmp/hosts-from-controller
+    - name: "Include ocp_iso_customize"
+      ansible.builtin.include_role:
+        name: "ocp_iso_customize"
+  vars:
+    ocp_iso_customize_role: bootstrap
+- name: Converge controlers
+  gather_facts: false
+  hosts: controlers
+  tasks:
+    # replace these tasks with whatever you find suitable to test
+    - name: Copy something to test use of synchronize module
+      ansible.builtin.copy:
+        src: /etc/hosts
+        dest: /tmp/hosts-from-controller
+    - name: "Include ocp_iso_customize"
+      ansible.builtin.include_role:
+        name: "ocp_iso_customize"
+  vars:
+    ocp_iso_customize_role: controlers
+- name: Converge workers
+  gather_facts: false
+  hosts: workers
+  tasks:
+    # replace these tasks with whatever you find suitable to test
+    - name: Copy something to test use of synchronize module
+      ansible.builtin.copy:
+        src: /etc/hosts
+        dest: /tmp/hosts-from-controller
+    - name: "Include ocp_iso_customize"
+      ansible.builtin.include_role:
+        name: "ocp_iso_customize"
+  vars:
+    ocp_iso_customize_role: worker

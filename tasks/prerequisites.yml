@@ -23,3 +23,9 @@
     dest: "{{ ocp_iso_customize_dest }}/{{ ocp_iso_customize_source_iso_url | urlsplit('path') | basename }}"
     mode: 0700
   when: not isocheck.stat.exists
+
+- name: Ensure podman is installed
+  ansible.builtin.package: 
+    name: podman
+    state: present
+  when: "ocp_iso_customize_coreos_installer_type == 'podman'"

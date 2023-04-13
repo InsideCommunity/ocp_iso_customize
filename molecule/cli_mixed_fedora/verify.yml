@@ -1,0 +1,24 @@
+---
+# This is an example playbook to execute Ansible tests.
+
+- name: Verify
+  hosts: all
+  gather_facts: false
+  vars:
+  tasks:
+  - name: Check resulting custom iso
+    ansible.builtin.find:
+      path: "/var/www/html/example/images/coreOS"
+      pattern: "custom-*.iso,minimal-*.iso"
+      excludes: "*fedora*"
+    register: results
+
+  - name: Debug find
+    ansible.builtin.debug:
+      msg: "{{ results }}"
+      verbosity: 3
+
+  - name: Verify results
+    ansible.builtin.fail:
+      msg: "FAILURE - error in iso count - should have 1 by host bootstrap, controler and worker"
+    when: results.matched != 1

@@ -1,4 +1,5 @@
 ---
+
 - name: Check base image exists
   ansible.builtin.stat:
      path: "{{ ocp_iso_customize_dest }}/{{ ocp_iso_customize_source_iso_url | urlsplit('path') | basename }}"
@@ -52,9 +53,28 @@
     msg: podman run --pull=always --privileged --rm -v {{ ocp_iso_customize_dest }}:/data -w /data quay.io/coreos/coreos-installer iso customize -o /data/{{ _output_iso_name }} --dest-karg-append "{{ _kargs }}" --live-karg-append "{{ _live_kargs }}" --dest-device /dev/{{ ocp_iso_customize_dest_device | default('sda') }} /data/{{ _input_iso_name }}
   when: _kargs is defined
 
-- name: CoreOS Iso customize
+- name: Check minimal output file exists
+  run_once: true
+  ansible.builtin.stat:
+     path: "{{ ocp_iso_customize_dest }}/{{ _output_iso_name }}"
+  register: outputminiiso
+  when: _kargs is defined and ocp_iso_customize_output_type == 'minimal'
+
+- name: Check output file exists
+  run_once: true
+  ansible.builtin.stat:
+     path: "{{ ocp_iso_customize_dest }}/{{ _output_iso_name }}"
+  register: outputiso
+  when: _kargs is defined and ocp_iso_customize_output_type != 'minimal'
+
+- name: Debug vars
+  ansible.builtin.debug:
+   msg: "{{ outputminiiso }}"
+   verbosity: 3
+
+- name: CoreOS minify Iso customize
   containers.podman.podman_container:
-     name: customioze_iso_builder_{{ ansible_host }}
+     name: customize_iso_builder_{{ ansible_host }}
      image: "{{ ocp_iso_customize_podman_coreos_installer_image | default('quay.io/coreos/coreos-installer') }}"
      command:
         - iso
@@ -70,4 +90,29 @@
      volume:
         - "{{ ocp_iso_customize_dest }}:/data"
      workdir: /data
-  when: _kargs is defined
+  when: "_kargs is defined and ocp_iso_customize_output_type == 'minimal' and not ( outputminiiso.stat.exists | d(false) )"
+
+- name: Debug vars
+  ansible.builtin.debug:
+   msg: "{{ outputiso }}"
+   verbosity: 3
+
+- name: CoreOS Iso customize
+  containers.podman.podman_container:
+     name: customize_iso_builder_{{ ansible_host }}
+     image: "{{ ocp_iso_customize_podman_coreos_installer_image | default('quay.io/coreos/coreos-installer') }}"
+     command:
+        - iso
+        - customize
+        - --output=/data/{{ _output_iso_name }}
+        - --dest-karg-append={{ _kargs }}
+        - --live-karg-append={{ _live_kargs }}
+        - --dest-device=/dev/{{ ocp_iso_customize_dest_device | default('sda') }}
+        - /data/{{ _input_iso_name }}
+     detach: false
+     privileged: true
+     rm: true
+     volume:
+        - "{{ ocp_iso_customize_dest }}:/data"
+     workdir: /data
+  when: "_kargs is defined and ocp_iso_customize_output_type != 'minimal' and not (outputiso.stat.exists | d(false) )"
