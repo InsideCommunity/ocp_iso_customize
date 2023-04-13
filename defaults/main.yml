@@ -1,6 +1,6 @@
 ocp_iso_customize_source_iso_url: "https://builds.coreos.fedoraproject.org/prod/streams/stable/builds/37.20230122.3.0/x86_64/fedora-coreos-37.20230122.3.0-live.x86_64.iso"
 # Custom coreos install image when store in a private network
-ocp_iso_customize_coreos_img_url:
+ocp_iso_customize_coreos_img_url: ""
 # Installer type cli or podman
 # Podman is prefered because of the use of podman_container module instead of shell for cli
 ocp_iso_customize_coreos_installer_type: podman
@@ -27,7 +27,7 @@ ocp_iso_customize_dest: "/var/www/html/example/images/coreOS"
 ocp_iso_customize_role: worker
 
 # Should be defined in host_vars both group_vars and host_vars
-#ocp_iso_customize_kargs:
+ocp_iso_customize_kargs: {}
 #  client_ip: 10.0.10.10
 #  gw_ip: 10.0.10.254
 #  netmask: 255.255.255.0
@@ -43,4 +43,4 @@ ocp_iso_customize_role: worker
 
 ocp_iso_customize_dest_device: sda
 
-# ocp_iso_customize_extra_live_karg: 
+ocp_iso_customize_extra_live_karg: ""

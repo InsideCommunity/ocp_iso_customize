@@ -8,7 +8,9 @@
 
 ⭐ Star us on GitHub — it motivates us a lot!
 
-Role to manage automatic rhcoreos or coreos creation with kargs and livekargs for Openshift/OKD installations
+Role to manage automatic rhcoreos or coreos creation with kargs and livekargs for Openshift/OKD installations.
+It has been made to iterate over inventory using bootstrap, masters and workers groups
+
 
 **Platforms Supported**:
 
@@ -63,14 +65,16 @@ Basic usage is:
   roles:
     - role: insidegroup.ocp_iso_customize
       vars:
-        ocp_iso_customize_coreos_img_url: null
+        ocp_iso_customize_coreos_img_url: ''
         ocp_iso_customize_coreos_installer_type: podman
         ocp_iso_customize_coreos_installer_url: http://mirror.openshift.com/pub/openshift-v4/x86_64/clients/coreos-installer/latest/coreos-installer
         ocp_iso_customize_dest: /var/www/html/example/images/coreOS
         ocp_iso_customize_dest_device: sda
         ocp_iso_customize_domain: example.com
+        ocp_iso_customize_extra_live_karg: ''
         ocp_iso_customize_filer: http://file.example.com/ocp4
         ocp_iso_customize_filer_ignition_path: '{{ ocp_iso_customize_filer }}/example/'
+        ocp_iso_customize_kargs: {}
         ocp_iso_customize_output_type: minimal
         ocp_iso_customize_primary_dns: 10.0.10.250
         ocp_iso_customize_role: worker
@@ -98,7 +102,7 @@ Role default variables from `defaults/main.yml`.
 | Variable Name | Value |
 |---------------|-------|
 | ocp_iso_customize_source_iso_url | https://builds.coreos.fedoraproject.org/prod/streams/stable/builds/37.20230122.3.0/x86_64/fedora-coreos-37.20230122.3.0-live.x86_64.iso |
-| ocp_iso_customize_coreos_img_url | None |
+| ocp_iso_customize_coreos_img_url |  |
 | ocp_iso_customize_coreos_installer_type | podman |
 | ocp_iso_customize_output_type | minimal |
 | ocp_iso_customize_coreos_installer_url | http://mirror.openshift.com/pub/openshift-v4/x86_64/clients/coreos-installer/latest/coreos-installer |
@@ -110,7 +114,27 @@ Role default variables from `defaults/main.yml`.
 | ocp_iso_customize_filer_ignition_path | {{ ocp_iso_customize_filer }}/example/ |
 | ocp_iso_customize_dest | /var/www/html/example/images/coreOS |
 | ocp_iso_customize_role | worker |
+| ocp_iso_customize_kargs | {}<br> |
 | ocp_iso_customize_dest_device | sda |
+| ocp_iso_customize_extra_live_karg |  |
+
+Focus on **ocp_iso_customize_kargs** if you needed to customize networking
+```yaml
+# Should be defined in host_vars both group_vars and host_vars
+ocp_iso_customize_kargs:
+  client_ip: 10.0.10.10
+  gw_ip: 10.0.10.254
+  netmask: 255.255.255.0
+  interface: bond0
+  autoconf: none
+  bond:
+    name: bond0
+    ifaces: ens18,ens19
+    bond_opts: mode=active-backup,fail_over_mac=follow
+  disabled_interfaces:
+    - eno1
+    - eno2
+```
 
 ### Context variables
 
