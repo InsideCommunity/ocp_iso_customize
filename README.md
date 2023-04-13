@@ -4,7 +4,7 @@
 [![License](https://img.shields.io/github/license/InsideCommunity/ocp_iso_customize?style=flat-square)](https://github.com/InsideCommunity/ocp_iso_customize/blob/main/LICENSE)
 [![Release](https://img.shields.io/github/v/release/InsideCommunity/ocp_iso_customize?style=flat-square)](https://github.com/InsideCommunity/ocp_iso_customize/releases)
 [![Status](https://img.shields.io/github/workflow/status/InsideCommunity/ocp_iso_customize/Ansible%20Molecule?style=flat-square&label=tests)](https://github.com/InsideCommunity/ocp_iso_customize/actions?query=workflow%3A%22Ansible+Molecule%22)
-[![Ansible Galaxy](https://img.shields.io/badge/ansible-galaxy-black.svg?style=flat-square&logo=ansible)](https://galaxy.ansible.com/InsideCommunity/ocp_iso_customize)[![Ansible version](https://img.shields.io/badge/ansible-%3E%3D2.9-black.svg?style=flat-square&logo=ansible)](https://github.com/ansible/ansible)
+[![Ansible Galaxy](https://img.shields.io/badge/ansible-galaxy-black.svg?style=flat-square&logo=ansible)](https://galaxy.ansible.com/insidegroup/ocp_iso_customize)[![Ansible version](https://img.shields.io/badge/ansible-%3E%3D2.9-black.svg?style=flat-square&logo=ansible)](https://github.com/ansible/ansible)
 
 ⭐ Star us on GitHub — it motivates us a lot!
 
