@@ -2,7 +2,9 @@ galaxy_info:
   namespace: insidegroup
   role_name: ocp_iso_customize
   author: STROHL Matthieu
-  description: Role to manage automatic rhcoreos or coreos creation with kargs and livekargs for Openshift/OKD installations
+  description: |
+    Role to manage automatic rhcoreos or coreos creation with kargs and livekargs for Openshift/OKD installations.
+    It has been made to iterate over inventory using bootstrap, masters and workers groups
   company: Inside Group
   license: GPL-3.0-only
   
