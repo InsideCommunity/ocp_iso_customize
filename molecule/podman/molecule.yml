@@ -10,8 +10,8 @@ platforms:
   # image=quay.io/podman/stable && scenario=docker_driver && molecule test -s $scenario
   # On "${name:-${image:-debian}", the last brace does not miss, it works like that...
   # The env var should be used when the image variable refers to a full registry path like registry.access.redhat.com/ubi8/ubi
-  - name: insidegroup_ocp_iso_customize_bootstrap_${name:-${image:-fedora}-${tag:-latest}-${scenario:-default}
-    image: ${image:-fedora}:${tag:-latest}
+  - name: insidegroup_ocp_iso_customize_bootstrap_podman-latest-podman
+    image: quay.io/podman/stable
     privileged: true
     tty: true
     tmpfs:
@@ -25,8 +25,8 @@ platforms:
       - LINUX_IMMUTABLE
     groups:
       - bootstrap
-  - name: insidegroup_ocp_iso_customize_controler_${name:-${image:-fedora}-${tag:-latest}-${scenario:-default}
-    image: ${image:-fedora}:${tag:-latest}
+  - name: insidegroup_ocp_iso_customize_controler_podman-latest-podman
+    image: quay.io/podman/stable
     privileged: true
     tty: true
     tmpfs:
@@ -40,8 +40,8 @@ platforms:
       - LINUX_IMMUTABLE
     groups:
       - controlers
-  - name: insidegroup_ocp_iso_customize_worker_${name:-${image:-fedora}-${tag:-latest}-${scenario:-default}
-    image: ${image:-fedora}:${tag:-latest}
+  - name: insidegroup_ocp_iso_customize_worker_podman-latest-podman
+    image: quay.io/podman/stable
     privileged: true
     tty: true
     tmpfs:

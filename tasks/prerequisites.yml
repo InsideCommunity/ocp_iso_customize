@@ -24,6 +24,27 @@
     mode: 0700
   when: not isocheck.stat.exists
 
+- name: Update Package Cache (apt/Ubuntu)
+  tags: always
+  ansible.builtin.apt:
+    update_cache: yes
+  changed_when: false
+  when: ansible_distribution == "Ubuntu"
+
+- name: Update Package Cache (dnf/CentOS)
+  tags: always
+  ansible.builtin.dnf:
+    update_cache: yes
+  changed_when: false
+  when: ansible_distribution == "CentOS"
+
+- name: Update Package Cache (yum/Amazon)
+  tags: always
+  ansible.builtin.yum:
+    update_cache: yes
+  changed_when: false
+  when: ansible_distribution == "Amazon"
+
 - name: Ensure podman is installed
   ansible.builtin.package: 
     name: podman

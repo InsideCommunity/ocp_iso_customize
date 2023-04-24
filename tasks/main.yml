@@ -1,7 +1,6 @@
 ---
 
 - name: Ensure prerequisites
-  run_once: true
   ansible.builtin.include_tasks: prerequisites.yml
 
 - name: Set vars/facts
