@@ -1,6 +1,5 @@
 ---
 - name: Converge bootstrap
-  gather_facts: false
   hosts: bootstrap
   tasks:
     # replace these tasks with whatever you find suitable to test
@@ -10,11 +9,12 @@
         dest: /tmp/hosts-from-controller
     - name: "Include ocp_iso_customize"
       ansible.builtin.include_role:
-        name: "ocp_iso_customize"
+        name: insidegroup.ocp_iso_customize
   vars:
     ocp_iso_customize_role: bootstrap
+    ocp_iso_customize_coreos_installer_type: cli    
+    ocp_iso_customize_output_type: full
 - name: Converge controlers
-  gather_facts: false
   hosts: controlers
   tasks:
     # replace these tasks with whatever you find suitable to test
@@ -24,11 +24,11 @@
         dest: /tmp/hosts-from-controller
     - name: "Include ocp_iso_customize"
       ansible.builtin.include_role:
-        name: "ocp_iso_customize"
+        name: insidegroup.ocp_iso_customize
   vars:
     ocp_iso_customize_role: controlers
+    ocp_iso_customize_coreos_installer_type: cli
 - name: Converge workers
-  gather_facts: false
   hosts: workers
   tasks:
     # replace these tasks with whatever you find suitable to test
@@ -38,6 +38,7 @@
         dest: /tmp/hosts-from-controller
     - name: "Include ocp_iso_customize"
       ansible.builtin.include_role:
-        name: "ocp_iso_customize"
+        name: insidegroup.ocp_iso_customize
   vars:
     ocp_iso_customize_role: worker
+    ocp_iso_customize_coreos_installer_type: cli
