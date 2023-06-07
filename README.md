@@ -128,9 +128,9 @@ ocp_iso_customize_kargs:
   interface: bond0
   autoconf: none
   bond:
-    name: bond0
-    ifaces: ens18,ens19
-    bond_opts: mode=active-backup,fail_over_mac=follow
+    - name: bond0
+      ifaces: ens18,ens19
+      bond_opts: mode=active-backup,fail_over_mac=follow
   disabled_interfaces:
     - eno1
     - eno2
